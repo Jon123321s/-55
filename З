@@ -1,0 +1,87 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <unordered_set>
+#include <string>
+
+char getRandomCharacter(std::unordered_set<char>& usedChars) {
+    static const std::string alphabet = "abcdefghijklmnopqrstuvwxyz";
+    int index = std::rand() % alphabet.size();
+    char randomChar = alphabet[index];
+    while (usedChars.find(randomChar) != usedChars.end()) {
+        index = std::rand() % alphabet.size();
+        randomChar = alphabet[index];
+    }
+    usedChars.insert(randomChar);
+    return randomChar;
+}
+
+std::string generateDirectory(std::unordered_set<char>& usedChars, int length) {
+    std::string directory;
+    for (int i = 0; i < length; i++) {
+        char randomChar = getRandomCharacter(usedChars);
+        directory += randomChar;
+    }
+    return directory;
+}
+
+std::string generateFile(std::unordered_set<char>& usedChars, int length) {
+    std::string file;
+    for (int i = 0; i < length - 4; i++) {
+        char randomChar = getRandomCharacter(usedChars);
+        file += randomChar;
+    }
+    file += ".";
+    for (int i = 0; i < 3; i++) {
+        char randomChar = getRandomCharacter(usedChars);
+        file += randomChar;
+    }
+    return file;
+}
+
+int main() {
+    // Настройка генератора случайных чисел
+    std::srand(std::time(nullptr));
+
+    // Ввод параметров от пользователя
+    std::string userChars;
+    int userNumber;
+    std::string fileChars;
+    int fileNumber;
+
+    std::cout << "Введите набор символов (не меньше 4, не больше 7): ";
+    std::cin >> userChars;
+
+    std::cout << "Введите целое положительное число: ";
+    std::cin >> userNumber;
+
+    std::cout << "Введите символы в формате asd.fdg (до точки от 4 до 7 символов, после точки - строго три символа): ";
+    std::cin >> fileChars;
+
+    std::cout << "Введите положительное целое число: ";
+    std::cin >> fileNumber;
+
+    // Проверка введенных параметров
+    if (userChars.length() < 4 || userChars.length() > 7) {
+        std::cout << "Неправильный набор символов. Попробуйте снова." << std::endl;
+        return 0;
+    }
+    if (fileChars.length() != 8 || fileChars[3] != '.') {
+        std::cout << "Неправильный формат символов. Попробуйте снова." << std::endl;
+        return 0;
+    }
+
+    // Создание директорий и файлов
+    std::unordered_set<char> usedChars;
+    for (int i = 0; i < userNumber; i++) {
+        std::string directory = generateDirectory(usedChars, userChars.length());
+        std::cout << "Создана папка: " << directory << std::endl;
+
+        for (int j = 0; j < fileNumber; j++) {
+            std::string file = generateFile(usedChars, fileChars.length());
+            std::cout << "Создан файл: " << file << std::endl;
+        }
+    }
+
+    return 0;
+}
